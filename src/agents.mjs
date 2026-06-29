@@ -10,6 +10,13 @@
 
 import { buildUserContent } from "./cerebras.mjs";
 
+// Throughput of a typical GPU-hosted inference provider, tokens/second. Used to
+// estimate what the same pipeline would cost on a GPU baseline — the side-by-side
+// latency comparison the hackathon recommends. Grounded in real token counts, so
+// it is an estimate of a slower provider, not a vanity number. Override with
+// BASELINE_TOK_PER_S to model a faster/slower baseline.
+export const BASELINE_TOK_PER_S = Number(process.env.BASELINE_TOK_PER_S) || 50;
+
 // ---------------------------------------------------------------------------
 // Final whisper card — the schema the UI renders. Kept identical to the
 // original demo contract so the recorded frontend keeps working unchanged.
@@ -262,6 +269,19 @@ export async function runDealRoom(input, { client } = {}) {
   const serialBaselineMs =
     results.reduce((sum, r) => sum + (r.latencyMs || 0), 0) + (synth.latencyMs || 0);
 
+  // GPU-baseline estimate: what the SAME parallel pipeline would take on a slow
+  // provider, grounded in the actual tokens Gemma generated. Specialists run
+  // concurrently, so the floor is the slowest specialist plus the synthesizer.
+  const completionTokens = (r) => Number(r.usage?.completion_tokens) || 0;
+  const specialistCompletion = results.map(completionTokens);
+  const synthCompletion = completionTokens(synth);
+  const totalCompletionTokens =
+    specialistCompletion.reduce((sum, t) => sum + t, 0) + synthCompletion;
+  const slowestSpecialistTokens = specialistCompletion.length ? Math.max(...specialistCompletion) : 0;
+  const gpuBaselineMs = Math.round(
+    ((slowestSpecialistTokens + synthCompletion) / BASELINE_TOK_PER_S) * 1000
+  );
+
   const card = { ...synth.output, latency_ms: synth.latencyMs || synth.output.latency_ms };
 
   return {
@@ -275,7 +295,11 @@ export async function runDealRoom(input, { client } = {}) {
       parallel_ms: parallelMs,
       synth_ms: synthMs,
       serial_baseline_ms: serialBaselineMs,
-      speedup_x: serialBaselineMs ? Number((serialBaselineMs / totalMs).toFixed(2)) : 1
+      speedup_x: serialBaselineMs ? Number((serialBaselineMs / totalMs).toFixed(2)) : 1,
+      completion_tokens: totalCompletionTokens,
+      gpu_tok_per_s: BASELINE_TOK_PER_S,
+      gpu_baseline_ms: gpuBaselineMs,
+      gpu_speedup_x: totalMs && gpuBaselineMs ? Number((gpuBaselineMs / totalMs).toFixed(2)) : 1
     }
   };
 }

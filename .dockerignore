@@ -1,0 +1,30 @@
+# Keep the image small and free of secrets / non-product artifacts.
+.git
+.gitignore
+.gitattributes
+node_modules
+
+# Recorded deliverable + narration audio: needed for the video, not the product.
+Video Project 4.mp4
+*.mov
+*.mkv
+*.mp4
+assets/Audio clips/
+assets/demo-audio.mp3
+
+# Secrets never go in the image (pass CEREBRAS_API_KEY at run time instead).
+.env
+.env.*
+
+# Internal planning docs.
+AUDIT.md
+Idea.txt
+PROJECT_DESCRIPTION.md
+Hackathon rules.txt
+
+# OS / editor cruft and logs.
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

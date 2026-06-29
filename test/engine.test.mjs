@@ -153,6 +153,12 @@ test("runDealRoom runs specialists in parallel then synthesizes (live mock)", as
   // Parallel wall-clock should not exceed the serial sum of all four calls.
   assert.ok(result.timing.serial_baseline_ms >= result.timing.parallel_ms);
   assert.ok(result.timing.speedup_x >= 1);
+  // GPU baseline is grounded in real token counts: 3 specialists + synth at
+  // 20 completion tokens each → 80 tokens total, (slowest spec 20 + synth 20)/50 tok/s.
+  assert.equal(result.timing.completion_tokens, 80);
+  assert.equal(result.timing.gpu_tok_per_s, 50);
+  assert.equal(result.timing.gpu_baseline_ms, 800);
+  assert.ok(result.timing.gpu_speedup_x >= 1);
 });
 
 test("runAgentCard returns the legacy single-card response shape", async () => {

@@ -8,7 +8,8 @@
     "grossMarginPct": 0.78,
     "discountAskedPct": 0.15,
     "discountFloorPct": 0.1,
-    "termYears": 2
+    "termYears": 2,
+    "closeProbLiftPts": 0.06
   },
   "buyerStakeholders": [
     "Director of Procurement: pushing for 15% off and a 2-year price freeze",

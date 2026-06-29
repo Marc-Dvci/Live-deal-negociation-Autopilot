@@ -104,6 +104,11 @@ function printAgent(title, agent, lines) {
   const tag = agent.source === "cerebras" ? c.green(`${agent.latencyMs} ms live`) : c.yellow("fallback");
   console.log(`  ${c.bold(c.blue("▸ " + title))}  ${c.dim("[" + tag + "]")}`);
   for (const line of lines(agent.output)) console.log("    " + c.dim(line));
+  // A key is set but this agent fell back — surface why instead of failing silently
+  // (e.g. a wrong model id, a 4xx from the endpoint, or a timeout).
+  if (client.hasKey && agent.source !== "cerebras" && agent.error) {
+    console.log("    " + c.red(`live call fell back: ${agent.error}`));
+  }
   console.log("");
 }
 
@@ -131,6 +136,14 @@ function printTiming(timing, source) {
   console.log(c.green(`    total (multi-agent)       : ${timing.total_ms} ms`));
   console.log(c.dim(`    same agents run serially  : ${timing.serial_baseline_ms} ms`));
   console.log(c.cyan(`    parallel speedup          : ${timing.speedup_x}x`));
+  if (timing.gpu_baseline_ms) {
+    console.log(
+      c.dim(
+        `    GPU baseline (${timing.gpu_tok_per_s} tok/s) : ~${timing.gpu_baseline_ms} ms for the same ${timing.completion_tokens} tokens`
+      )
+    );
+    console.log(c.cyan(`    vs Cerebras               : ${timing.gpu_speedup_x}x faster`));
+  }
   const verdict =
     timing.total_ms < 2000
       ? c.green("    ✓ Inside the conversational reply window.")

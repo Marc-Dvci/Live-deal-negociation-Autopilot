@@ -8,19 +8,30 @@ import { loadDeal, toTranscript } from "../src/deal-loader.mjs";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-test("computeDealEconomics grounds the discount and margin math", () => {
+test("computeDealEconomics grounds discount, margin, and the net-margin headline", () => {
   const e = computeDealEconomics({
     arr: 1_200_000,
     grossMarginPct: 0.8,
     discountAskedPct: 0.18,
     discountFloorPct: 0.08,
-    termYears: 1
+    termYears: 1,
+    closeProbLiftPts: 0.08
   });
-  assert.equal(e.discount_cost_arr, 216_000);
-  assert.equal(e.margin_cost_arr, 172_800);
+  assert.equal(e.discount_cost_arr, 216_000); // 1:1 gross-margin given away
+  assert.equal(e.deal_gross_margin_arr, 960_000);
+  assert.equal(e.expected_close_gain_arr, 76_800); // 8pt lift × $960k gross margin
+  assert.equal(e.net_margin_risk_arr, 139_200); // $216k − $76.8k ≈ the $140k headline
   assert.equal(e.exceeds_floor, true);
   assert.equal(e.over_floor_cost_arr, 120_000);
   assert.match(e.summary, /\$216k/);
+  assert.match(e.summary, /\$139\.2k/);
+});
+
+test("computeDealEconomics nets to the full discount when no close-prob lift is given", () => {
+  const e = computeDealEconomics({ arr: 1_000_000, discountAskedPct: 0.1 });
+  assert.equal(e.discount_cost_arr, 100_000);
+  assert.equal(e.expected_close_gain_arr, 0);
+  assert.equal(e.net_margin_risk_arr, 100_000);
 });
 
 test("computeDealEconomics accepts whole-number percentages", () => {
@@ -60,7 +71,8 @@ test("loadDeal reads a custom deal folder of plain files", async () => {
   assert.equal(deal.transcript.length, 3);
   assert.equal(deal.transcript[0].speaker, "Buyer");
   assert.equal(deal.context.economics.discount_cost_arr, 72_000);
-  assert.equal(deal.imageDataUri, ""); // no redline image in the sample
+  // The sample now ships a redline image, so the multimodal vision path is exercised.
+  assert.match(deal.imageDataUri, /^data:image\/png;base64,/);
 });
 
 test("loadDeal reads the bundled demo json shape", async () => {

@@ -22,6 +22,11 @@ if (!Array.isArray(demoData.context.documents)) {
   demoData.context.documents = (demoData.documents || []).map((d) => ({ title: d.title, body: d.summary }));
 }
 
+// Load the bundled contract redline as a base64 data URI so the live legal agent
+// always has a real raster image to read — even when the caller (a curl request,
+// or a browser whose <img> src isn't a data URI) doesn't supply one.
+const demoRedlineDataUri = await loadRedline(path.join(rootDir, "assets", "redline.png"));
+
 const client = createCerebrasClient({ apiKey, apiBase, model });
 
 const mimeTypes = new Map([
@@ -93,8 +98,19 @@ async function handleCerebrasCard(req, res) {
     return;
   }
 
+  // For the multimodal legal card, guarantee a real raster image: honor a
+  // caller-supplied PNG/JPEG data URI, otherwise fall back to the bundled redline.
+  const imageDataUri =
+    cardType === "legal"
+      ? rasterDataUri(body.imageDataUri) || demoRedlineDataUri
+      : body.imageDataUri || "";
+
   try {
-    const result = await runAgentCard(cardType, { ...body, context: body.context || demoData.context }, { client });
+    const result = await runAgentCard(
+      cardType,
+      { ...body, imageDataUri, context: body.context || demoData.context },
+      { client }
+    );
     if (result.source !== "cerebras") {
       result.card = { ...fallback, latency_ms: result.card?.latency_ms || fallback.latency_ms || 620 };
     }
@@ -143,6 +159,22 @@ const DEFAULT_FALLBACK = {
   evidence: ["Default safety fallback"],
   latency_ms: 620
 };
+
+// Only data URIs for raster images Gemma vision can read are accepted from the
+// caller; anything else (empty, an SVG, or an unreachable localhost URL) is
+// rejected so the server can substitute the bundled redline instead.
+function rasterDataUri(value) {
+  return typeof value === "string" && /^data:image\/(png|jpe?g|webp);base64,/i.test(value) ? value : "";
+}
+
+async function loadRedline(filePath) {
+  try {
+    const buf = await readFile(filePath);
+    return `data:image/png;base64,${buf.toString("base64")}`;
+  } catch {
+    return "";
+  }
+}
 
 async function serveStatic(pathname, req, res) {
   const requestedPath = pathname === "/" ? "/index.html" : pathname;
@@ -232,6 +264,10 @@ async function loadEnv(filePath) {
 async function listenOnAvailablePort(serverInstance) {
   const preferred = Number(process.env.PORT || env.PORT || 5173);
   const ports = [...new Set([preferred, 5174, 5175, 3000, 8080])];
+  // Bind to loopback by default so the local recording stays private. In a
+  // container set HOST=0.0.0.0 so the mapped port is reachable from the host.
+  const host = process.env.HOST || env.HOST || "127.0.0.1";
+  const displayHost = host === "0.0.0.0" || host === "::" ? "127.0.0.1" : host;
 
   for (const port of ports) {
     const ok = await new Promise((resolve) => {
@@ -245,12 +281,12 @@ async function listenOnAvailablePort(serverInstance) {
       };
       serverInstance.once("error", onError);
       serverInstance.once("listening", onListening);
-      serverInstance.listen(port, "127.0.0.1");
+      serverInstance.listen(port, host);
     });
 
     if (ok === true) {
       const mode = client.hasKey ? "live Cerebras" : "deterministic fallback (no API key)";
-      console.log(`Real-Time Deal Room running at http://127.0.0.1:${port}  [${mode}]`);
+      console.log(`Real-Time Deal Room running at http://${displayHost}:${port}  [${mode}]`);
       return;
     }
   }

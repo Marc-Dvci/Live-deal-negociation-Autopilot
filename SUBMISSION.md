@@ -25,7 +25,7 @@ speaks again. Because Cerebras runs the whole agent team in well under the
 conversational reply window, the guidance is usable live — at GPU speeds it
 arrives only after the seller already had to respond.
 
-**GitHub Repository:** https://github.com/yourname/real-time-deal-room
+**GitHub Repository:** https://github.com/Marc-Dvci/Live-deal-negociation-Autopilot
 
 **Demo Video:** (attached)
 
@@ -47,7 +47,7 @@ for safe rendering, and the system degrades to deterministic guidance on
 failure — and at Cerebras speed a 1–3% lift in negotiation outcomes across
 renewals and procurement is worth far more than another post-call summary tool.
 
-**GitHub Repository:** https://github.com/yourname/real-time-deal-room
+**GitHub Repository:** https://github.com/Marc-Dvci/Live-deal-negociation-Autopilot
 
 **Demo Video:** (attached)
 
@@ -66,7 +66,7 @@ say, offer, or refuse before the next sentence. It only works because Cerebras
 inference is fast enough to beat the human reply window; a GPU baseline is still
 drafting when the moment is already gone.
 
-**GitHub Repository:** https://github.com/yourname/real-time-deal-room
+**GitHub Repository:** https://github.com/Marc-Dvci/Live-deal-negociation-Autopilot
 
 **Demo Video:** (attached)
 

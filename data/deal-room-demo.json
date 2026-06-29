@@ -5,8 +5,10 @@
     "grossMarginPct": 0.8,
     "discountAskedPct": 0.18,
     "discountFloorPct": 0.08,
-    "termYears": 1
+    "termYears": 1,
+    "closeProbLiftPts": 0.08
   },
+  "imagePath": "../assets/redline.png",
   "context": {
     "account": "Northstar Retail",
     "deal": "$1.2M annual SaaS renewal",

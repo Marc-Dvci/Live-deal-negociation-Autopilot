@@ -12,10 +12,24 @@ export function computeDealEconomics(econ = {}) {
   const discountAskedPct = clampFraction(econ.discountAskedPct, 0);
   const discountFloorPct = clampFraction(econ.discountFloorPct, 0.08);
   const termYears = Math.max(1, num(econ.termYears, 1));
+  // Incremental close probability the discount is expected to buy, as a fraction
+  // (accepts 0.08 or 8). Drives the expected-value netting below.
+  const closeProbLiftPts = clampFraction(econ.closeProbLiftPts, 0);
 
+  // A list-price discount is a 1:1 gross-margin loss: cost-to-serve is unchanged,
+  // so every dollar discounted comes straight out of gross margin.
   const discountCostArr = round(arr * discountAskedPct);
   const discountCostTerm = round(discountCostArr * termYears);
-  const marginCostArr = round(discountCostArr * grossMarginPct);
+  const dealGrossMarginArr = round(arr * grossMarginPct);
+
+  // Expected value of the close-probability lift the discount buys: the extra
+  // probability of winning applied to the deal's gross margin.
+  const expectedCloseGainArr = round(closeProbLiftPts * dealGrossMarginArr);
+
+  // Net margin at risk = what you give away, netted against the expected gain
+  // from the higher close probability. This is the headline "net margin leak".
+  const netMarginRiskArr = Math.max(0, discountCostArr - expectedCloseGainArr);
+
   const exceedsFloor = discountAskedPct > discountFloorPct + 1e-9;
   const overFloorPct = Math.max(0, discountAskedPct - discountFloorPct);
   const overFloorCostArr = round(arr * overFloorPct);
@@ -25,10 +39,15 @@ export function computeDealEconomics(econ = {}) {
   const parts = [];
   if (arr > 0 && discountAskedPct > 0) {
     parts.push(
-      `A ${pct(discountAskedPct)} discount on ${fmt(arr)} ARR costs ${fmt(discountCostArr)}/yr` +
+      `A ${pct(discountAskedPct)} discount on ${fmt(arr)} ARR gives away ${fmt(discountCostArr)}/yr in gross margin` +
         (termYears > 1 ? ` (${fmt(discountCostTerm)} over ${termYears} yrs)` : "") +
-        `, about ${fmt(marginCostArr)} in gross margin.`
+        `.`
     );
+    if (expectedCloseGainArr > 0) {
+      parts.push(
+        `Netted against the ${pct(closeProbLiftPts)} close-probability lift it buys (~${fmt(expectedCloseGainArr)} expected won margin), the net margin risk is ${fmt(netMarginRiskArr)}.`
+      );
+    }
   }
   if (exceedsFloor) {
     parts.push(
@@ -44,16 +63,22 @@ export function computeDealEconomics(econ = {}) {
     discount_asked_pct: discountAskedPct,
     discount_floor_pct: discountFloorPct,
     term_years: termYears,
+    close_prob_lift_pts: closeProbLiftPts,
     discount_cost_arr: discountCostArr,
     discount_cost_term: discountCostTerm,
-    margin_cost_arr: marginCostArr,
+    deal_gross_margin_arr: dealGrossMarginArr,
+    expected_close_gain_arr: expectedCloseGainArr,
+    net_margin_risk_arr: netMarginRiskArr,
+    // Backward-compatible alias: the full gross margin given away (= discount cost
+    // for a 1:1 price cut), kept so older readers don't break.
+    margin_cost_arr: discountCostArr,
     exceeds_floor: exceedsFloor,
     over_floor_cost_arr: overFloorCostArr,
     summary: parts.join(" "),
     formatted: {
       arr: fmt(arr),
       discount_cost_arr: fmt(discountCostArr),
-      margin_cost_arr: fmt(marginCostArr),
+      net_margin_risk_arr: fmt(netMarginRiskArr),
       over_floor_cost_arr: fmt(overFloorCostArr)
     }
   };

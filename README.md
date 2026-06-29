@@ -47,6 +47,18 @@ npm start
 # open the URL it prints, e.g. http://127.0.0.1:5173
 ```
 
+### Or run it with Docker (no Node needed)
+
+```bash
+docker compose up
+# open http://127.0.0.1:5173
+```
+
+The image is tiny (zero dependencies, no build step) and runs in deterministic
+fallback mode out of the box. To enable live Cerebras inference, put
+`CEREBRAS_API_KEY=...` in a `.env` file (compose reads it automatically) before
+running, or `docker run -e CEREBRAS_API_KEY=... -p 5173:5173 real-time-deal-room`.
+
 ### Enable live Cerebras inference
 
 Copy the example env file and add your key:
@@ -87,8 +99,16 @@ synthesized whisper, and a parallel-vs-serial latency report:
     3 specialists in parallel : ...
     total (multi-agent)       : ...
     parallel speedup          : ...x
+    GPU baseline (50 tok/s)   : ~... ms for the same ... tokens
+    vs Cerebras               : ...x faster
     ✓ Inside the conversational reply window.
 ```
+
+The **GPU baseline** is grounded in the real token counts Gemma generated: the
+same parallel pipeline at 50 tok/s is estimated from
+`(slowest specialist + synthesizer) completion tokens ÷ 50`. It's the
+side-by-side latency comparison the hackathon recommends — an estimate of a
+slower provider, not a vanity number (override with `BASELINE_TOK_PER_S`).
 
 Options:
 
@@ -140,10 +160,14 @@ State-of-the-art agent patterns, all on Gemma 4 31B / Cerebras:
 - **Strict structured outputs** — every call uses `response_format: json_schema`
   with `strict: true`, so the UI never parses free-form text.
 - **Multimodal vision** — the legal agent reads contract redline *images*
-  directly (`image_url` / base64 data URIs).
+  directly (`image_url` / base64 data URIs). A sample `assets/redline.png` ships
+  and is attached automatically by the demo, the bundled deal, and the live
+  legal endpoint, so the vision path is always exercised.
 - **Deterministic numeric grounding** — a dedicated economics engine
   (`src/economics.mjs`) computes every dollar figure; the LLM does strategy, not
-  arithmetic.
+  arithmetic. A discount is treated as a 1:1 gross-margin loss, then netted
+  against an expected-value model of the close-probability lift it buys, so the
+  headline "net margin risk" is derived, not guessed.
 - **Zero-config document ingestion** — heterogeneous files become a structured
   negotiation context with no schema work from the user.
 - **Latency-first** — `reasoning_effort: none`, capped tokens, abort-timeouts,
@@ -203,8 +227,10 @@ src/deal-loader.mjs   bring-your-own-deal ingestion (folder of files -> context)
 deals/                sample deal + your own deal folders
 app.js / index.html   recorded demo frontend (60s autoplay)
 data/                 synthetic demo dataset + fallback cards
-test/                 node:test suite (18 tests)
+test/                 node:test suite (19 tests)
 docs/ARCHITECTURE.md  design + diagrams
+Dockerfile            container image (zero-dep, non-root, healthchecked)
+docker-compose.yml    one-command run (`docker compose up`)
 ```
 
 ## License

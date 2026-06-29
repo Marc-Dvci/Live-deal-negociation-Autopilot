@@ -77,10 +77,31 @@ The CLI prints both numbers and the resulting speedup.
 ## Numeric grounding
 
 LLMs reason well and count badly. `src/economics.mjs` deterministically computes
-every dollar figure (discount cost in ARR, gross-margin impact, approval-floor
-breach) from the deal's structured `economics` block. That summary is injected
-into the pricing and synthesizer prompts with an instruction to reuse the figures
-verbatim, so the recommendation is numerically correct by construction.
+every dollar figure from the deal's structured `economics` block:
+
+- **Discount cost** — a list-price discount is a 1:1 gross-margin loss (cost to
+  serve is unchanged), so the discount cost *is* the gross margin given away.
+- **Expected close gain** — the incremental close probability the discount buys
+  (`closeProbLiftPts`), applied to the deal's gross margin.
+- **Net margin risk** — discount cost netted against the expected close gain.
+  This is the headline figure (e.g. an 18% discount on $1.2M ARR gives away
+  $216k, but nets to ~$140k risk after an 8-point close-probability lift).
+- **Approval-floor breach** — how far the ask exceeds the discount floor, in
+  both percent and dollars.
+
+That summary is injected into the pricing and synthesizer prompts with an
+instruction to reuse the figures verbatim, so the recommendation is numerically
+correct by construction rather than hallucinated.
+
+## Speed comparison
+
+`runDealRoom` reports both a parallel-vs-serial speedup *and* a GPU-baseline
+estimate. The GPU baseline is grounded in the actual completion tokens Gemma
+generated: the same parallel pipeline at 50 tok/s (`BASELINE_TOK_PER_S`) would
+take `(slowest specialist + synthesizer) tokens ÷ 50`. This is the side-by-side
+latency comparison the hackathon recommends — modeled on real token counts, not
+an arbitrary multiplier — and is what turns "AI prepares me" into "AI plays the
+call with me".
 
 ## Bring your own deal
 

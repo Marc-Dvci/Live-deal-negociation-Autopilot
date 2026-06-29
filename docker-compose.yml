@@ -1,0 +1,20 @@
+# One-command run: `docker compose up`  ->  http://127.0.0.1:5173
+#
+# Runs in deterministic fallback mode out of the box. To enable the live
+# Cerebras inference path, create a .env file with CEREBRAS_API_KEY=... (compose
+# reads it automatically) or export the variable before running.
+services:
+  deal-room:
+    build: .
+    image: real-time-deal-room
+    container_name: real-time-deal-room
+    ports:
+      - "5173:5173"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 5173
+      # Optional — leave empty for fallback mode, set it for live Cerebras Gemma 4 31B.
+      CEREBRAS_API_KEY: ${CEREBRAS_API_KEY:-}
+      CEREBRAS_MODEL: ${CEREBRAS_MODEL:-gemma-4-31b}
+      CEREBRAS_API_BASE: ${CEREBRAS_API_BASE:-https://api.cerebras.ai/v1}
+    restart: unless-stopped
