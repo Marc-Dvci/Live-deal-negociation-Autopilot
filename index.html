@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Real-Time Deal Room</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <p class="eyebrow">Cerebras + Gemma 4 31B enterprise impact demo</p>
+          <h1>Real-Time Deal Room</h1>
+        </div>
+        <div class="stage-block">
+          <div class="stage-copy">
+            <span id="stageLabel">Ready</span>
+            <strong id="stageDetail">One click starts the 60-second judged demo.</strong>
+          </div>
+        </div>
+        <div class="status-strip">
+          <button class="primary-start" id="startButton" type="button">Start autoplay</button>
+        </div>
+      </header>
+
+      <main class="deal-grid">
+        <section class="panel docs-panel" aria-labelledby="docsTitle">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Input docs</p>
+              <h2 id="docsTitle">Deal context</h2>
+            </div>
+            <div class="mini-metric">
+              <span>$1.2M</span>
+              ARR renewal
+            </div>
+          </div>
+          <div class="doc-list" id="docList"></div>
+          <div class="redline-preview">
+            <div class="preview-head">
+              <span>Contract redline image</span>
+              <strong id="visionStatus">queued for vision pass</strong>
+            </div>
+            <img id="redlineImage" alt="Generated redline screenshot for multimodal analysis">
+          </div>
+        </section>
+
+        <section class="panel call-panel" aria-labelledby="callTitle">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Simulated client call</p>
+              <h2 id="callTitle">Northstar Retail renewal</h2>
+            </div>
+            <div class="recording">
+              <span class="record-dot"></span>
+              recording
+            </div>
+          </div>
+          <div class="video-frame">
+            <video id="clientVideo" preload="metadata" playsinline poster="assets/client-procurement-exec.png"></video>
+            <img src="assets/client-procurement-exec.png" alt="Fictional client procurement executive on a video call">
+            <div class="video-overlay">
+              <div>
+                <span>Marina Vale</span>
+                <small>VP Procurement, Northstar Retail</small>
+              </div>
+              <strong id="clientMood">waiting for QBR handoff</strong>
+            </div>
+            <div class="audio-wave" id="speakerWave" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="subtitle" id="subtitle">The app autolaunches and loads the negotiation room.</div>
+          <div class="transcript" id="transcript" aria-live="polite"></div>
+        </section>
+
+        <section class="panel console-panel" aria-labelledby="consoleTitle">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Private AI console</p>
+              <h2 id="consoleTitle">Whisper mode</h2>
+            </div>
+            <div class="latency-badge" id="latencyBadge">ready</div>
+          </div>
+
+          <div class="agent-row" id="agentRow"></div>
+
+          <article class="ai-card idle" id="aiCard">
+            <div class="card-topline">
+              <span class="urgency">ready</span>
+              <span id="cardSource">cached fallback armed</span>
+            </div>
+            <h3>Waiting for the first buyer signal</h3>
+            <p>When the buyer objects, the console returns the exact next line before the seller has to respond.</p>
+          </article>
+
+          <div class="move-table-wrap">
+            <div class="section-title">
+              <span>Counterfactual move table</span>
+              <strong id="moveStatus">pre-call baseline</strong>
+            </div>
+            <table class="move-table">
+              <thead>
+                <tr>
+                  <th>Move</th>
+                  <th>Close</th>
+                  <th>Margin</th>
+                  <th>Risk</th>
+                </tr>
+              </thead>
+              <tbody id="moveTable"></tbody>
+            </table>
+          </div>
+
+          <div class="speed-race" id="speedRace">
+            <div class="race-head">
+              <span>Cerebras vs 50 tok/s baseline</span>
+              <strong id="raceStatus">starts at 38s</strong>
+            </div>
+            <div class="race-grid">
+              <div class="race-lane cerebras-lane">
+                <div class="lane-label">Cerebras</div>
+                <div class="lane-metric"><strong>&lt;1s</strong><span>usable move</span></div>
+                <div class="progress"><span id="cerebrasProgress"></span></div>
+                <p id="cerebrasRaceText">Actionable card ready inside the reply window.</p>
+              </div>
+              <div class="race-lane baseline-lane">
+                <div class="lane-label">50 tok/s baseline</div>
+                <div class="lane-metric"><strong>18s</strong><span>too late</span></div>
+                <div class="progress"><span id="baselineProgress"></span></div>
+                <p id="baselineRaceText">Waiting for serial agents.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="impact-row" id="impactRow" aria-live="polite">
+            <div>
+              <span>Margin</span>
+              <strong id="marginOutcome">$0 protected</strong>
+            </div>
+            <div>
+              <span>Legal</span>
+              <strong id="legalOutcome">monitoring</strong>
+            </div>
+            <div>
+              <span>Close</span>
+              <strong id="closeOutcome">61%</strong>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <audio id="demoAudio" preload="auto" src="assets/demo-audio.mp3"></audio>
+    <script src="app.js" defer></script>
+  </body>
+</html>

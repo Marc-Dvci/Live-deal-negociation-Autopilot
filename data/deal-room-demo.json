@@ -1,0 +1,130 @@
+{
+  "economics": {
+    "currency": "USD",
+    "arr": 1200000,
+    "grossMarginPct": 0.8,
+    "discountAskedPct": 0.18,
+    "discountFloorPct": 0.08,
+    "termYears": 1
+  },
+  "context": {
+    "account": "Northstar Retail",
+    "deal": "$1.2M annual SaaS renewal",
+    "sellerGoal": "Preserve price, protect renewal uplift language, and convert rollout anxiety into a structured implementation offer.",
+    "buyerStakeholders": [
+      "VP Procurement: asks for discount and cash-flow relief",
+      "Security Lead: worried about Salesforce integration readiness",
+      "General Counsel: inserted renewal uplift redline",
+      "CFO: wants Q3 launch certainty before approving"
+    ],
+    "commercialPolicy": {
+      "discountFloor": "Do not exceed 8% without CFO approval.",
+      "preferredConcession": "Quarterly payment terms plus $35k implementation credit.",
+      "marginRisk": "An 18% discount costs about $216k ARR; expected margin leakage is shown as $140k net risk after close-probability lift."
+    },
+    "legalPolicy": {
+      "redFlag": "Removing automatic renewal uplift breaks revenue policy.",
+      "safeCounter": "Cap renewal uplift at 5%, require 60-day notice, and allow a volume-tier review."
+    }
+  },
+  "documents": [
+    {
+      "id": "crm",
+      "title": "CRM account brief",
+      "label": "sales",
+      "tone": "positive",
+      "summary": "Northstar expanded usage 42% in nine months. Executive sponsor wants the Q3 rollout live before peak season."
+    },
+    {
+      "id": "pricing",
+      "title": "Pricing and approval policy",
+      "label": "finance",
+      "tone": "warning",
+      "summary": "Seller can offer payment timing and services credits. Discounts above 8% require CFO approval and trigger margin review."
+    },
+    {
+      "id": "redline",
+      "title": "Renewal clause redline",
+      "label": "legal",
+      "tone": "warning",
+      "summary": "Buyer removed the 5% renewal uplift. Legal policy requires capped uplift language or executive exception."
+    },
+    {
+      "id": "security",
+      "title": "Security implementation signal",
+      "label": "risk",
+      "tone": "positive",
+      "summary": "Security tickets mention Salesforce readiness seven times. This is likely deployment risk, not pure price resistance."
+    }
+  ],
+  "clientLines": [
+    "We like the platform, but the price is higher than expected. Procurement is asking for 18% off.",
+    "Also, legal changed the renewal uplift clause. They said it was standard.",
+    "Honestly, security is worried the Salesforce integration will not be ready before our Q3 rollout.",
+    "If you can make the rollout less risky and help cash flow, I think we can get this signed."
+  ],
+  "moves": [
+    {
+      "move": "Give 18% discount",
+      "close": "+7 pts",
+      "margin": "-$140k net",
+      "risk": "Medium",
+      "bad": true,
+      "recommended": false
+    },
+    {
+      "move": "Quarterly terms + implementation credit",
+      "close": "+11 pts",
+      "margin": "Protected",
+      "risk": "Low",
+      "bad": false,
+      "recommended": true
+    },
+    {
+      "move": "Accept renewal redline",
+      "close": "+3 pts",
+      "margin": "Bad renewal compounding",
+      "risk": "High",
+      "bad": true,
+      "recommended": false
+    },
+    {
+      "move": "Counter with capped uplift clause",
+      "close": "Neutral",
+      "margin": "Protected",
+      "risk": "Low",
+      "bad": false,
+      "recommended": true
+    }
+  ],
+  "fallbackCards": {
+    "objection": {
+      "urgency": "critical",
+      "diagnosis": "This is not a true price objection; price is a proxy for rollout and approval risk.",
+      "recommended_line": "Before we talk discount, what happens if the Salesforce rollout misses Q3? We can protect cash flow with quarterly terms and include implementation credits.",
+      "do_not_say": "I can take 18% off if that gets this done today.",
+      "business_impact": "Avoids a $140k net margin leak while raising close probability by shifting the buyer from price anchoring to risk reduction.",
+      "evidence": [
+        "Security tickets mention Salesforce readiness",
+        "Sponsor wants Q3 peak-season launch",
+        "Discount above 8% needs CFO approval",
+        "Procurement asked before security spoke"
+      ],
+      "latency_ms": 620
+    },
+    "legal": {
+      "urgency": "high",
+      "diagnosis": "The redline looks standard but removes the renewal uplift engine.",
+      "recommended_line": "We can accept a rollout success plan, but not that renewal redline; I can send capped 5% uplift language with 60-day notice and a volume-tier review.",
+      "do_not_say": "That legal change is fine if it helps us close.",
+      "business_impact": "Blocks compounding renewal leakage while giving the buyer procedural fairness and budget predictability.",
+      "evidence": [
+        "Image shows uplift deletion",
+        "Policy requires uplift or exception",
+        "Buyer asked for cash-flow help",
+        "Capped language preserves flexibility"
+      ],
+      "latency_ms": 740
+    }
+  }
+}

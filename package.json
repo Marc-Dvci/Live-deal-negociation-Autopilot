@@ -1,0 +1,18 @@
+{
+  "name": "real-time-deal-room",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Live B2B negotiation autopilot — a parallel multi-agent engine on Cerebras-hosted Gemma 4 31B that whispers the seller's next move before the buyer speaks again.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "agents": "node run-agents.mjs",
+    "test": "node --test",
+    "check": "node --check server.mjs && node --check app.js && node --check run-agents.mjs && node --check src/agents.mjs && node --check src/cerebras.mjs && node --check src/economics.mjs && node --check src/deal-loader.mjs",
+    "validate:data": "node -e \"JSON.parse(require('fs').readFileSync('data/deal-room-demo.json','utf8')); console.log('demo data ok')\""
+  },
+  "license": "MIT"
+}

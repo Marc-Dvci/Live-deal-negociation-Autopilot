@@ -1,0 +1,3 @@
+Buyer: We're ready to renew, but procurement wants 15% off and a two-year price freeze.
+Buyer: Operations really needs the analytics module live before the Q4 audit, though.
+Buyer: And security is telling us we can't turn on the new seats until SSO is sorted out.

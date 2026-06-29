@@ -1,0 +1,27 @@
+{
+  "account": "Acme Manufacturing",
+  "deal": "$480k annual platform renewal + seat expansion",
+  "sellerGoal": "Expand seats, protect list price, and avoid a multi-year price freeze.",
+  "economics": {
+    "currency": "USD",
+    "arr": 480000,
+    "grossMarginPct": 0.78,
+    "discountAskedPct": 0.15,
+    "discountFloorPct": 0.1,
+    "termYears": 2
+  },
+  "buyerStakeholders": [
+    "Director of Procurement: pushing for 15% off and a 2-year price freeze",
+    "VP Operations: internal champion, needs the analytics module before Q4 audit",
+    "IT Security: requires SSO/SCIM before expansion seats can activate"
+  ],
+  "commercialPolicy": {
+    "discountFloor": "Do not exceed 10% without VP Sales approval.",
+    "preferredConcession": "Ramped annual pricing plus a 3-month free analytics module.",
+    "priceLock": "Avoid multi-year price freezes; cap any lock at 5% annual uplift."
+  },
+  "legalPolicy": {
+    "redFlag": "A multi-year price freeze removes annual uplift and compounds margin loss.",
+    "safeCounter": "24-month term with capped 5% annual uplift and mutual termination-for-convenience."
+  }
+}
