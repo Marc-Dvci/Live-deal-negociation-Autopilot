@@ -204,17 +204,6 @@ npm run validate:data # validate the demo dataset
 
 ---
 
-## Recording / demo notes
-
-- The web UI runs a deterministic 60-second autoplay; click **Start autoplay**
-  once after recording begins (don't refresh).
-- The recorded `Video Project 4.mp4` is **not** committed (it exceeds GitHub's
-  100 MB limit) — it's attached on Discord/X per the hackathon rules.
-- All deal data is synthetic; the client name, portrait, and redline are
-  fictional. See [`VIDEO_SCRIPT.md`](VIDEO_SCRIPT.md) for the demo timeline.
-
----
-
 ## Project layout
 
 ```
